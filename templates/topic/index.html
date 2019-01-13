@@ -34,7 +34,12 @@
                                 <a class="topic_title" href="{{ url_for('topic.detail', id=t.id) }}">
                                     {{ t.title }}
                                 </a>
-                                <span>{{ t.replies() | length }} / {{ t.views }}</span>
+                                <span>
+                                    {{ t.replies() | length }} / {{ t.views }}
+                                </span>
+                                <a class="topic_delete" href="{{ url_for('topic.delete', token=token, id=t.id) }}">
+                                    删除
+                                </a>
                             </div>
                         </div>
                         {% endfor %}
