@@ -1,29 +1,32 @@
+.idea
+data
+config.py
+gua.log.txt
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
-*$py.class
 
 # C extensions
 *.so
 
 # Distribution / packaging
 .Python
+env/
 build/
 develop-eggs/
 dist/
 downloads/
 eggs/
-.eggs/
 lib/
 lib64/
 parts/
 sdist/
 var/
-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-MANIFEST
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -38,15 +41,10 @@ pip-delete-this-directory.txt
 # Unit test / coverage reports
 htmlcov/
 .tox/
-.nox/
 .coverage
-.coverage.*
 .cache
 nosetests.xml
 coverage.xml
-*.cover
-.hypothesis/
-.pytest_cache/
 
 # Translations
 *.mo
@@ -54,15 +52,6 @@ coverage.xml
 
 # Django stuff:
 *.log
-local_settings.py
-db.sqlite3
-
-# Flask stuff:
-instance/
-.webassets-cache
-
-# Scrapy stuff:
-.scrapy
 
 # Sphinx documentation
 docs/_build/
@@ -70,45 +59,49 @@ docs/_build/
 # PyBuilder
 target/
 
-# Jupyter Notebook
-.ipynb_checkpoints
+# =========================
+# Operating System Files
+# =========================
 
-# IPython
-profile_default/
-ipython_config.py
+# OSX
+# =========================
 
-# pyenv
-.python-version
+.DS_Store
+.AppleDouble
+.LSOverride
 
-# celery beat schedule file
-celerybeat-schedule
+# Thumbnails
+._*
 
-# SageMath parsed files
-*.sage.py
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
 
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
 
-# Spyder project settings
-.spyderproject
-.spyproject
+# Windows
+# =========================
 
-# Rope project settings
-.ropeproject
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
 
-# mkdocs documentation
-/site
+# Folder config file
+Desktop.ini
 
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
 
-# Pyre type checker
-.pyre/
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
