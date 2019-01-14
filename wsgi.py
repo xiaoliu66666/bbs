@@ -8,6 +8,9 @@ sys.path.insert(0, abspath(dirname(__file__)))
 application = app.app
 
 """
+建立一个软连接（右边指向左边）
+ln -s /var/www/bbs/bbs.conf /etc/supervisor/conf.d/bbs.conf
+
 ➜  ~ cat /etc/supervisor/conf.d/bbs.conf
 
 [program:bbs]
