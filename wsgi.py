@@ -11,7 +11,7 @@ application = app.app
 ➜  ~ cat /etc/supervisor/conf.d/bbs.conf
 
 [program:bbs]
-command=/usr/local/bin/gunicorn wsgi -c /usr/local/bin/gunicorn wsgi --bind 0.0.0.0:2001 --pid /tmp/bbs.pid
+command=/usr/local/bin/gunicorn wsgi --bind 0.0.0.0:2001 --pid /tmp/bbs.pid
 directory=/var/www/bbs
 autostart=true
 autorestart=true
