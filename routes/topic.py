@@ -34,8 +34,8 @@ def index():
 @main.route('/<int:id>')
 def detail(id):
     topic = Topic.get(id)
-    # 传递 topic 的所有 reply 到 页面中
-    return render_template("topic/detail.html", topic=topic)
+    board = Board.find(topic.board_id)
+    return render_template("topic/detail.html", topic=topic, board=board)
 
 
 @main.route("/add", methods=["POST"])
