@@ -17,7 +17,6 @@ main = Blueprint('reply', __name__)
 def add():
     form = request.form
     u = routes.current_user()
-    print('DEBUG', form)
     m = Reply.new(form, user_id=u.id)
     return redirect(url_for('topic.detail', id=m.topic_id))
 

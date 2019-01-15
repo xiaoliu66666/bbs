@@ -7,23 +7,28 @@ from flask import (
     abort,
 )
 
-from routes import *
-
+from models.board import Board
 from models.topic import Topic
-
+import uuid
+import routes
 
 main = Blueprint('topic', __name__)
 
-import uuid
+
 csrf_token = set()
 
 
 @main.route("/")
 def index():
-    ms = Topic.all()
+    board_id = int(request.args.get("board_id", -1))
+    if board_id == -1:
+        ts = Topic.all()
+    else:
+        ts = Topic.find_all(board_id=board_id)
     token = str(uuid.uuid4())
     csrf_token.add(token)
-    return render_template("topic/index.html", ms=ms, token=token)
+    bs = Board.all()
+    return render_template("topic/index.html", ts=ts, token=token, bs=bs)
 
 
 @main.route('/<int:id>')
@@ -36,7 +41,7 @@ def detail(id):
 @main.route("/add", methods=["POST"])
 def add():
     form = request.form
-    u = current_user()
+    u = routes.current_user()
     m = Topic.new(form, user_id=u.id)
     return redirect(url_for('.detail', id=m.id))
 
@@ -48,7 +53,7 @@ def delete():
     # 判断token是否是我们给的
     if token in csrf_token:
         csrf_token.remove(token)
-        u = current_user()
+        u = routes.current_user()
         if u is not None:
             Topic.delete(id)
             return redirect(url_for('.index'))
@@ -60,4 +65,5 @@ def delete():
 
 @main.route("/new")
 def new():
-    return render_template("topic/new.html")
+    bs = Board.all()
+    return render_template("topic/new.html", bs=bs)
