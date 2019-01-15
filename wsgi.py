@@ -14,7 +14,7 @@ ln -s /var/www/bbs/bbs.conf /etc/supervisor/conf.d/bbs.conf
 ➜  ~ cat /etc/supervisor/conf.d/bbs.conf
 
 [program:bbs]
-command=/usr/local/bin/gunicorn wsgi --bind 0.0.0.0:2001 --pid /tmp/bbs.pid
+command=/usr/local/bin/gunicorn wsgi -c gunicorn_conf.py
 directory=/var/www/bbs
 autostart=true
 autorestart=true
