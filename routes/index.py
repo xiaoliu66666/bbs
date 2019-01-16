@@ -1,3 +1,5 @@
+import os
+
 from flask import (
     render_template,
     request,
@@ -5,20 +7,18 @@ from flask import (
     session,
     url_for,
     Blueprint,
-    make_response,
-)
+    flash,
+    send_from_directory)
+
+from config import Config
 
 from models.user import User
-
-from utils import log
+from werkzeug.utils import secure_filename
 
 main = Blueprint('index', __name__)
 
 
 def current_user():
-    # 从 session 中找到 user_id 字段, 找不到就 -1
-    # 然后 User.find_by 来用 id 找用户
-    # 找不到就返回 None
     uid = session.get('user_id', -1)
     u = User.find_by(id=uid)
     return u
@@ -60,7 +60,6 @@ def login():
         session['user_id'] = u.id
         # 设置 cookie 有效期为 永久
         session.permanent = True
-        log("session: ", session)
         return redirect(url_for('.profile'))
 
 
@@ -71,3 +70,39 @@ def profile():
         return redirect(url_for('.index'))
     else:
         return render_template('profile.html', user=u)
+
+
+def allow_file(filename):
+    suffix = filename.split(".")[-1]
+    return suffix in Config.ACCEPT_TYPE
+
+
+@main.route('/addimg', methods=["POST"])
+def add_img():
+    u = current_user()
+
+    if u is None:
+        return redirect(url_for('.index'))
+
+    if 'file' not in request.files:
+        return redirect(request.url)
+
+    file = request.files['file']
+    if file.filename == '':
+        flash('未选择文件')
+        return redirect(request.url)
+
+    if allow_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(Config.UPLOAD_FOLDER, filename))
+        u.user_image = filename
+        u.save()
+
+    return redirect(url_for('.profile'))
+
+
+# send_from_directory
+# nginx 静态文件
+@main.route("/uploads/<filename>")
+def uploads(filename):
+    return send_from_directory(Config.UPLOAD_FOLDER, filename)

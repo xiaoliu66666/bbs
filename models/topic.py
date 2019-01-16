@@ -25,7 +25,13 @@ class Topic(Model):
         rs = Reply.find_all(topic_id=self.id)
         return rs
 
-    def boards(self):
+    def board(self):
         from .board import Board
         b = Board.find(self.board_id)
         return b
+
+    def user(self):
+        from .user import User
+        u = User.find(id=self.user_id)
+        return u
+

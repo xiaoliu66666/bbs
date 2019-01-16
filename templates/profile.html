@@ -15,5 +15,15 @@
     <div>
         {{ user.password }}
     </div>
+    <h1>Upload new file</h1>
+    <form method="post" enctype="multipart/form-data" action="{{ url_for('.add_img') }}">
+        <input type="file" name="file">
+        <button >Upload</button>
+    </form>
+    {% for msg in get_flashed_messages()  %}
+        <div>
+            {{ msg }}
+        </div>
+    {% endfor %}
 </body>
 </html>

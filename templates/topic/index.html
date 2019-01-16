@@ -41,6 +41,11 @@
                     {% for t in ts %}
                     <div class="cell">
                         <div class="topic_title_wrapper">
+                            <a class="user_avatar pull-left">
+                                <img src="{{ '/uploads/' + t.user().user_image + '?v=3&amp;s=120' }}"
+                                     title="{{ t.user().username }}">
+                            </a>
+
                             <a class="topic_title" href="{{ url_for('topic.detail', id=t.id) }}">
                                 {{ t.title }}
                             </a>
@@ -63,6 +68,7 @@
     var editor = new Editor();
     editor.render($('.editor')[0]);
   })();
+
 
 </script>
 </body>

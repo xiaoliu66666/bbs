@@ -34,8 +34,10 @@ def index():
 @main.route('/<int:id>')
 def detail(id):
     topic = Topic.get(id)
-    board = Board.find(topic.board_id)
-    return render_template("topic/detail.html", topic=topic, board=board)
+    board = topic.board()
+    user = topic.user()
+    return render_template("topic/detail.html",
+                           topic=topic, board=board, user=user)
 
 
 @main.route("/add", methods=["POST"])
