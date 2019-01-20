@@ -6,7 +6,6 @@ from flask import (
     render_template,
 )
 
-import routes
 
 from models.board import Board
 
@@ -21,5 +20,5 @@ def index():
 @main.route("/add", methods=["POST"])
 def add():
     form = request.form
-    m = Board.new(form)
+    Board.new(form)
     return redirect(url_for('.index'))

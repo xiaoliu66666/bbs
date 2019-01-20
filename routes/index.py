@@ -14,15 +14,10 @@ from config import Config
 
 from models.user import User
 from werkzeug.utils import secure_filename
+from routes import current_user
+from utils import log
 
 main = Blueprint('index', __name__)
-
-
-def current_user():
-    uid = session.get('user_id', -1)
-    u = User.find_by(id=uid)
-    return u
-
 
 """
 用户在这里可以
@@ -36,28 +31,28 @@ def current_user():
 
 @main.route("/")
 def index():
-    u = current_user()
-    return render_template("index.html", user=u)
+    return render_template("index.html")
 
 
 @main.route("/register", methods=['POST'])
 def register():
     form = request.form
     # 用类函数来判断
-    u = User.register(form)
+    User.register(form)
     return redirect(url_for('.index'))
 
 
 @main.route("/login", methods=['POST'])
 def login():
     form = request.form
+    log("form: ", form)
     u = User.validate_login(form)
     if u is None:
         # 转到 topic.index 页面
         return redirect(url_for('topic.index'))
     else:
         # session 中写入 user_id
-        session['user_id'] = u.id
+        session['user_id'] = u['_id']
         # 设置 cookie 有效期为 永久
         session.permanent = True
         return redirect(url_for('.profile'))
@@ -101,8 +96,6 @@ def add_img():
     return redirect(url_for('.profile'))
 
 
-# send_from_directory
-# nginx 静态文件
 @main.route("/uploads/<filename>")
 def uploads(filename):
     return send_from_directory(Config.UPLOAD_FOLDER, filename)

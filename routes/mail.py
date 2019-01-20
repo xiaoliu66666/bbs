@@ -6,7 +6,7 @@ from flask import (
     render_template,
 )
 
-import routes
+from routes import current_user
 
 from models.mail import Mail
 
@@ -17,7 +17,7 @@ main = Blueprint('mail', __name__)
 @main.route("/add", methods=["POST"])
 def add():
     form = request.form
-    u = routes.current_user()
+    u = current_user()
     mail = Mail.new(form)
     # 开始时sender_id被设置为-1，不能直接从request中获取
     mail.set_sender(u.id)
@@ -26,7 +26,7 @@ def add():
 
 @main.route("/")
 def index():
-    u = routes.current_user()
+    u = current_user()
     sent = Mail.find_all(sender_id=u.id)
     received = Mail.find_all(receiver_id=u.id)
     return render_template('mail/index.html', sents=sent, receiveds=received)
@@ -41,7 +41,7 @@ def view(id):
     :return: 对应的邮件
     """
     mail = Mail.find(id)
-    u = routes.current_user()
+    u = current_user()
     if u.id == mail.receiver_id:
         mail.mark_read()
     if u.id in [mail.receiver_id, mail.sender_id]:

@@ -1,3 +1,4 @@
+
 from models import Model
 
 
@@ -5,11 +6,16 @@ class User(Model):
     """
     User 是一个保存用户数据的 model
     """
-    def __init__(self, form):
-        self.id = form.get('id', None)
+    __fields__ = Model.__fields__ + [
+        ('username', str, ''),
+        ('password', str, ''),
+        ('user_image', str, ''),
+    ]
+
+    def from_form(self, form):
         self.username = form.get('username', '')
         self.password = form.get('password', '')
-        self.user_image = ''
+        self.user_image = 'default.png'
 
     def salted_password(self, password, salt='$!@><?>HUI&DWQa`'):
         import hashlib
@@ -32,19 +38,38 @@ class User(Model):
     def register(cls, form):
         name = form.get('username', '')
         pwd = form.get('password', '')
-        if len(name) > 2 and User.find_by(username=name) is None:
+        if len(name) > 2 and User.find_one(username=name) is None:
             u = User.new(form)
             u.password = u.salted_password(pwd)
-            u.save()
             return u
         else:
             return None
 
     @classmethod
     def validate_login(cls, form):
-        u = User(form)
-        user = User.find_by(username=u.username)
-        if user is not None and user.password == u.salted_password(u.password):
+        u = User()
+        u.from_form(form)
+        # pprint("u: " + str(u))
+        user = User.find_one(username=u.username)
+        # pprint("user: " + str(user))
+        if user is not None and user.get("password", "") == u.salted_password(u.password):
             return user
         else:
             return None
+
+
+# 测试能否根据用户名找到对应用户，结果可行
+# def case(username=None):
+#     from pymongo import MongoClient
+#
+#     client = MongoClient()
+#
+#     # 创建数据库 bbs
+#     db = client["bbs"]
+#
+#     u = User.find_one(username=username)
+#     return u
+#
+#
+# u = case(username="qwe")
+# print(u)

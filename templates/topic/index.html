@@ -26,12 +26,15 @@
     </div>
     <div id="content">
         <div class="panel">
+            {% for msg in get_flashed_messages() %}
+            <p>{{ msg }}</p>
+            {% endfor %}
             <div class="header">
                 <a href="/topic" class="topic-tab current-tab">
                     全部
                 </a>
                 {% for b in bs %}
-                <a href="/topic?board_id={{ b.id }}" class="topic-tab current-tab">
+                <a href="/topic?board_id={{ b['_id'] }}" class="topic-tab current-tab">
                     {{ b.title }}
                 </a>
                 {% endfor %}
@@ -68,6 +71,7 @@
     var editor = new Editor();
     editor.render($('.editor')[0]);
   })();
+
 
 
 </script>
