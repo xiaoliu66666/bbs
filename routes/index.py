@@ -45,22 +45,23 @@ def register():
 @main.route("/login", methods=['POST'])
 def login():
     form = request.form
-    log("form: ", form)
     u = User.validate_login(form)
+    # log("登录时的user所有属性 : ", u.__dict__)
     if u is None:
         # 转到 topic.index 页面
         return redirect(url_for('topic.index'))
     else:
-        # session 中写入 user_id
-        session['user_id'] = u['_id']
+        # 往session 中写入 user_id
+        session['user_id'] = str(u._id)
         # 设置 cookie 有效期为 永久
         session.permanent = True
         return redirect(url_for('.profile'))
 
 
-@main.route('/profile')
+@main.route('/profile/')
 def profile():
     u = current_user()
+    # log("u: ", u)
     if u is None:
         return redirect(url_for('.index'))
     else:
@@ -90,8 +91,7 @@ def add_img():
     if allow_file(file.filename):
         filename = secure_filename(file.filename)
         file.save(os.path.join(Config.UPLOAD_FOLDER, filename))
-        u.user_image = filename
-        u.save()
+        u.update(user_image=filename)
 
     return redirect(url_for('.profile'))
 

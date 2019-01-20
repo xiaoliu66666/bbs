@@ -4,9 +4,9 @@ from models import Model
 class Reply(Model):
     __fields__ = Model.__fields__ + [
         ('content', str, ''),
-        ('topic_id', int, -1),
-        ('receiver_id', int, -1),
-        ('user_id', int, -1)
+        ('topic_id', str, ''),
+        ('receiver_id', str, ''),
+        ('user_id', str, '')
     ]
 
     def user(self):

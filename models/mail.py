@@ -7,8 +7,8 @@ class Mail(Model):
         ('title', str, ''),
         ('content', str, ''),
         ('read', bool, False),
-        ('sender_id', int, -1),
-        ('receiver_id', int, -1),
+        ('sender_id', str, ''),
+        ('receiver_id', str, ''),
     ]
 
     def set_sender(self, sender_id):

@@ -20,5 +20,6 @@ def index():
 @main.route("/add", methods=["POST"])
 def add():
     form = request.form
-    Board.new(form)
+    b = Board.new(form)
+    b.save()
     return redirect(url_for('.index'))

@@ -54,7 +54,7 @@
         {% for r in topic.replies() %}
         <div class="cell reply_area reply_item">
             <div class="author_content">
-                <a href="/user/yinxin630" class="user_avatar">
+                <a href="" class="user_avatar">
                     <img src="https://avatars0.githubusercontent.com/u/6939365?v=4&amp;s=120" title="{{ r.user().username }}">
                 </a>
                 <div class="user_info">
@@ -82,8 +82,8 @@
     </div>
     <div id="reply">
         <form method="post" action="{{ url_for('reply.add') }}">
-            <input type="hidden" name="topic_id" value="{{ topic.id }}">
-            <textarea name="reply-content"></textarea>
+            <input type="hidden" name="topic_id" value="{{ topic._id }}">
+            <textarea name="content"></textarea>
             <button>添加回复</button>
         </form>
     </div>

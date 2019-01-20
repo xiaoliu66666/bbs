@@ -1,5 +1,7 @@
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from models import Model
+from utils import log
 
 
 class User(Model):
@@ -12,64 +14,48 @@ class User(Model):
         ('user_image', str, ''),
     ]
 
-    def from_form(self, form):
-        self.username = form.get('username', '')
-        self.password = form.get('password', '')
-        self.user_image = 'default.png'
-
-    def salted_password(self, password, salt='$!@><?>HUI&DWQa`'):
-        import hashlib
-
-        def sha256(ascii_str):
-            return hashlib.sha256(ascii_str.encode('ascii')).hexdigest()
-        hash1 = sha256(password)
-        hash2 = sha256(hash1 + salt)
-        return hash2
-
-    def hashed_password(self, pwd):
-        import hashlib
-        # 用 ascii 编码转换成 bytes 对象
-        p = pwd.encode('ascii')
-        s = hashlib.sha256(p)
-        # 返回摘要字符串
-        return s.hexdigest()
-
     @classmethod
     def register(cls, form):
         name = form.get('username', '')
-        pwd = form.get('password', '')
+        raw_pwd = form.get('password', '')
+        pwd = generate_password_hash(raw_pwd)
         if len(name) > 2 and User.find_one(username=name) is None:
-            u = User.new(form)
-            u.password = u.salted_password(pwd)
+            u = User.new(form, password=pwd)
+            u.save()
             return u
         else:
             return None
 
     @classmethod
     def validate_login(cls, form):
-        u = User()
-        u.from_form(form)
-        # pprint("u: " + str(u))
+        u = User.new(form)
+        # log("form: ", form)
+        # user 是根据用户名查询到的用户，u 是根据表单生成的用户
         user = User.find_one(username=u.username)
-        # pprint("user: " + str(user))
-        if user is not None and user.get("password", "") == u.salted_password(u.password):
+        if user is not None and check_password_hash(user.password, u.password):
+            # log("u: ", user)
             return user
         else:
             return None
 
 
-# 测试能否根据用户名找到对应用户，结果可行
-# def case(username=None):
+# 测试User能否调用Model的各种方法，结果可行
+# 所以问题应该出在session部分，发现session里面并没有保存任何东西
+# def case(id):
 #     from pymongo import MongoClient
+#     from bson import ObjectId
 #
 #     client = MongoClient()
-#
 #     # 创建数据库 bbs
 #     db = client["bbs"]
 #
-#     u = User.find_one(username=username)
-#     return u
+#     User.delete(id)
 #
 #
-# u = case(username="qwe")
-# print(u)
+# case("5c429e5b9252f92740742e11")
+
+
+
+
+
+

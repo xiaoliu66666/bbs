@@ -19,6 +19,7 @@ def add():
     form = request.form
     u = current_user()
     mail = Mail.new(form)
+    mail.save()
     # 开始时sender_id被设置为-1，不能直接从request中获取
     mail.set_sender(u.id)
     return redirect(url_for('.index'))
@@ -32,7 +33,7 @@ def index():
     return render_template('mail/index.html', sents=sent, receiveds=received)
 
 
-@main.route("/views/<int:id>")
+@main.route("/views/id")
 def view(id):
     """
     注意安全问题，首先确定登录的用户是收件人，如果不是就不能标记已读；

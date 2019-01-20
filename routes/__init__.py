@@ -5,11 +5,8 @@ from utils import log
 
 
 def current_user():
-    username = session.get("username", "")
-    log("username: ", username)
-    if username != "":
-        u = User.find_one(username=username)
-        return u
-    else:
-        return None
+    uid = session.get('user_id', '')
+    u = User.find(uid)
+    return u
+
 

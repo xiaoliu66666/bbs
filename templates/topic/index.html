@@ -49,13 +49,13 @@
                                      title="{{ t.user().username }}">
                             </a>
 
-                            <a class="topic_title" href="{{ url_for('topic.detail', id=t.id) }}">
+                            <a class="topic_title" href="{{ url_for('topic.detail', id=t._id) }}">
                                 {{ t.title }}
                             </a>
                             <span>
                                     {{ t.replies() | length }} / {{ t.views }}
                                 </span>
-                            <a class="topic_delete" href="{{ url_for('topic.delete', token=token, id=t.id) }}">
+                            <a class="topic_delete" href="{{ url_for('topic.delete', token=token, id=t._id) }}">
                                 删除
                             </a>
                         </div>

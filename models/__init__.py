@@ -2,35 +2,12 @@ import time
 from bson import ObjectId
 from pymongo import MongoClient
 
+from utils import log
+
 client = MongoClient()
 
 # 创建数据库 bbs
 db = client["bbs"]
-
-
-# def next_id(name):
-#     """
-#     实现 id 自增
-#     :param name: 当前的类名
-#     :return: 新的id
-#     """
-#     query = {
-#         'name': name,
-#     }
-#     update = {
-#         '$inc': {
-#             'seq': 1
-#         }
-#     }
-#     kwargs = {
-#         'query': query,
-#         'update': update,
-#         'upsert': True,
-#         'new': True,
-#     }
-#     # 存储数据的 id
-#     new_id = db["data_id"].find_and_modify(**kwargs).get('seq')
-#     return new_id
 
 
 class Model:
@@ -47,7 +24,6 @@ class Model:
         """
         new 是给外部使用的函数
         """
-        name = cls.__name__
         m = cls()
         fields = cls.__fields__.copy()
         fields.remove('_id')
@@ -75,22 +51,24 @@ class Model:
         ts = int(time.time())
         m.created_time = ts
         m.updated_time = ts
-        m.save()
+        m.id = ""
         return m
 
     def save(self):
         name = self.__class__.__name__
-        db[name].insert_one(self.__dict__)
+        insert = db[name].insert_one(self.__dict__)
+        self.id = str(insert.inserted_id)
+        db[name].update_one({"id": ""}, {"$set": {"id": self.id}})
+        # log("self.id", self.id)
 
     @classmethod
     def delete(cls, id=None):
         """
         根据传入的 id， 实现软删除
-
         """
         name = cls.__name__
         query = {
-            'id': id,
+            '_id': ObjectId(id),
         }
         update = {
             'deleted': True
@@ -98,24 +76,43 @@ class Model:
         db[name].update_one(query, {"$set": update})
 
     @classmethod
+    def _new_with_bson(cls, bson):
+        """
+        这是给内部 all 这种函数使用的函数
+        从 mongo 数据中恢复一个 model
+        """
+        m = cls()
+        fields = cls.__fields__.copy()
+        # 去掉 _id 这个特殊的字段
+        fields.remove('_id')
+        for f in fields:
+            k, t, v = f
+            if k in bson:
+                setattr(m, k, bson[k])
+            else:
+                # 设置默认值
+                setattr(m, k, v)
+        setattr(m, '_id', bson['_id'])
+        return m
+
+    @classmethod
     def _find(cls, *args, **kwargs):
         name = cls.__name__
-        # pprint("name: " + name)
-        # 过滤掉所有 deleted 字段为 True 的数据
-        kwargs["deleted"] = False
-        # result是一个 Cursor 对象
-        result = db[name].find(kwargs)
-        # pprint(result)
-        ms = list(result)
-        # pprint("查询结果：" + str(ms))
-        # 返回一个列表
-        return ms
+        flag_sort = '__sort'
+        sort = kwargs.pop(flag_sort, None)
+        ds = db[name].find(kwargs)
+        if sort is not None:
+            ds = ds.sort(sort)
+        l = [cls._new_with_bson(d) for d in ds]
+        return l
 
     @classmethod
     def find_one(cls, **kwargs):
-        name = cls.__name__
-        result = db[name].find_one(kwargs)
-        return result
+        l = cls._find(kwargs, deleted=False)
+        if len(l) > 0:
+            return l[0]
+        else:
+            return None
 
     @classmethod
     def find_all(cls, **kwargs):
@@ -128,22 +125,19 @@ class Model:
         """
         return cls._find()
 
-    @classmethod
-    def update(cls, filter, update):
+    def update(self, *args, **kwargs):
         """
         根据filter查到数据并更新
         :param filter:
-        :param update: 要带上 $ 操作符
+        :param update: 是一个字典
         :return:
         """
-        name = cls.__name__
-        db[name].update_one(filter, update)
-
+        _filter = {"_id": self._id}
+        name = self.__class__.__name__
+        # kwargs.update({"updated_time": int(time.time())})
+        db[name].update_one(_filter, {"$set": kwargs})
 
     @classmethod
     def find(cls, id):
         return cls.find_one(_id=ObjectId(id))
 
-    @property
-    def id(self):
-        return self._id
